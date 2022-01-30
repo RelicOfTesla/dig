@@ -15,8 +15,12 @@ func assertErrorMatches(t *testing.T, err error, msg string, msgs ...string) {
 }
 
 func RootCause(err error) error {
-	if e2 := errors.Unwrap(err); e2 != nil {
-		return e2
+	for {
+		e2 := errors.Unwrap(err)
+		if e2 == nil {
+			break
+		}
+		err = e2
 	}
 	return err
 }

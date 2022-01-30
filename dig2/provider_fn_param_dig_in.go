@@ -34,6 +34,9 @@ func (x *digInProvider) FindValueCreator(bCtx ProviderBuildContext, t TargetKey)
 			return nil, errors.Wrap(ErrUBerDefine, bCtx.GetPathString())
 		}
 	}
+	if tp.Kind() != reflect.Struct {
+		return nil, errors.Wrap(ErrUBerDefine, bCtx.GetPathString())
+	}
 	builderList := make([]TargetValueCreator, tp.NumField())
 	for i, n := 0, tp.NumField(); i < n; i++ {
 		ft := tp.Field(i)

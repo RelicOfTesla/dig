@@ -9,7 +9,7 @@
   * Thread safely.
 
 # Example
-  see [request_di_test.go](dig2/request_di_test.go) , [container_test.go](dig2/container_test.go)
+  see  [container_test.go](dig2/container_test.go), [request_di_test.go](dig2/request_di_test.go) 
   
 
 # Some TODO

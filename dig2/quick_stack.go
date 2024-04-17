@@ -5,7 +5,7 @@ package dig2
 type quickCloneStack = quickCloneTreeNode
 type quickCloneTreeNode struct {
 	prev *quickCloneTreeNode
-	val  interface{}
+	val  any
 	len  uint
 }
 
@@ -14,7 +14,7 @@ func newQuickCloneStack() *quickCloneStack {
 	return r
 }
 
-func (x *quickCloneTreeNode) PushBack(val interface{}) *quickCloneTreeNode {
+func (x *quickCloneTreeNode) PushBack(val any) *quickCloneTreeNode {
 	newNode := &quickCloneTreeNode{
 		prev: x,
 		val:  val,
@@ -25,7 +25,7 @@ func (x *quickCloneTreeNode) PushBack(val interface{}) *quickCloneTreeNode {
 func (x *quickCloneTreeNode) Prev() *quickCloneTreeNode {
 	return x.prev
 }
-func (x *quickCloneTreeNode) Value() interface{} {
+func (x *quickCloneTreeNode) Value() any {
 	return x.val
 }
 func (x *quickCloneTreeNode) Len() uint {

@@ -6,6 +6,7 @@ import (
 )
 
 /////
+
 type fnParseProviderMgr struct {
 	parserList []fnParser
 }
@@ -34,7 +35,7 @@ func (s *fnParseProviderMgr) AddParseProvider(p fnParser) {
 	s.parserList = append(s.parserList, p)
 }
 
-func (s *fnParseProviderMgr) addFromCreatorFunc(creator interface{}, store providerStore, opt *provideOptionImpl, rootMgr *providerMgr) error {
+func (s *fnParseProviderMgr) addFromCreatorFunc(creator any, store providerStore, opt *provideOptionImpl, rootMgr *providerMgr) error {
 	rCreator := unwrapDoubleValueOf(creator)
 	if rCreator.Kind() != reflect.Func {
 		return errors.WithStack(ErrMustFuncType)

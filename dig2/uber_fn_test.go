@@ -48,9 +48,9 @@ func anonymousField(t reflect.Type) reflect.StructField {
 	return reflect.StructField{Name: t.Name(), Anonymous: true, Type: t}
 }
 
-func IsIn(o interface{}) bool {
+func IsIn(o any) bool {
 	return embedsType(o, _digInType)
 }
-func IsOut(o interface{}) bool {
+func IsOut(o any) bool {
 	return embedsType(o, _digOutType)
 }

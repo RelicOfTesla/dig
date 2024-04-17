@@ -21,7 +21,7 @@ func unwrapTypePtr(v reflect.Type) reflect.Type {
 	}
 }
 
-func unwrapDoubleValueOf(v interface{}) reflect.Value {
+func unwrapDoubleValueOf(v any) reflect.Value {
 	rv := reflect.ValueOf(v)
 	for {
 		if !rv.IsValid() {
@@ -38,7 +38,7 @@ func unwrapDoubleValueOf(v interface{}) reflect.Value {
 }
 
 // Returns true if t embeds e or if any of the types embedded by t embed e.
-func embedsType(i interface{}, e reflect.Type) bool {
+func embedsType(i any, e reflect.Type) bool {
 	// TODO: this function doesn't consider e being a pointer.
 	// given `type A foo { *In }`, this function would return false for
 	// embedding dig.In, which makes for some extra error checking in places

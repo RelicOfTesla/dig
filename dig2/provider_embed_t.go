@@ -8,10 +8,10 @@ import (
 type embedProvider struct {
 	embedType  reflect.Type
 	queryImpl  bool
-	getValueFn interface{}
+	getValueFn any
 }
 
-func NewEmbedProvider(embedType reflect.Type, queryImpl bool, getValueFn interface{}) *embedProvider {
+func NewEmbedProvider(embedType reflect.Type, queryImpl bool, getValueFn any) *embedProvider {
 	return &embedProvider{
 		embedType:  embedType,
 		queryImpl:  queryImpl,

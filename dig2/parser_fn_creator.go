@@ -6,6 +6,7 @@ import (
 )
 
 /////////////////////////////////
+
 type nativeOutParser struct {
 	// implement fnParser
 }
@@ -77,7 +78,7 @@ func newNativeResultPicker(idx int, lastIsErr bool) resultPickerFunc {
 	}
 }
 
-var vtNativeInterfaceType = reflect.TypeOf((*interface{})(nil)).Elem()
+var vtNativeInterfaceType = reflect.TypeOf((*any)(nil)).Elem()
 
 func isIgnoreType(t reflect.Type) bool {
 	if t == vtReflectValue || t == vtNativeInterfaceType {

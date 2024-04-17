@@ -6,6 +6,7 @@ import (
 )
 
 ////////////////
+
 var uber_special_logic = true
 
 func init() {
@@ -13,7 +14,7 @@ func init() {
 }
 
 ////////////////
-////////////////
+
 type optionImpl struct {
 	// uber test opt
 	dry  bool
@@ -44,6 +45,7 @@ type Option interface {
 }
 
 ////////////////
+
 type provideOptionImpl struct {
 	Name    string
 	Group   string
@@ -54,7 +56,7 @@ type provideOptionImpl struct {
 	deferAcyclicVerification bool
 }
 
-func (x *providerMgr) Provide(f interface{}, _opts ...ProvideOption) error {
+func (x *providerMgr) Provide(f any, _opts ...ProvideOption) error {
 	opt := DefaultProviderOption
 	opt.deferAcyclicVerification = x.opt.deferAcyclicVerification
 	if len(_opts) >= 1 {
@@ -63,7 +65,7 @@ func (x *providerMgr) Provide(f interface{}, _opts ...ProvideOption) error {
 	return x._initFnParser.addFromCreatorFunc(f, &staticStore{x}, opt, x)
 }
 
-// uber.dig style
+// ProvideOption uber.dig style
 type ProvideOption interface {
 	applyProvideOption(*provideOptionImpl)
 }
@@ -76,7 +78,6 @@ func newProvideOptions(opts ...ProvideOption) *provideOptionImpl {
 	return ret
 }
 
-//
 type provideOptionFunc func(*provideOptionImpl)
 
 func (f provideOptionFunc) applyProvideOption(opts *provideOptionImpl) { f(opts) }
@@ -99,7 +100,6 @@ func Group(group string) ProvideOption {
 	})
 }
 
-//
 func Cache(_cache ...bool) ProvideOption {
 	cache := true
 	if len(_cache) > 0 {
@@ -110,9 +110,8 @@ func Cache(_cache ...bool) ProvideOption {
 	})
 }
 
-////////////////
-// uber dig.Invoke
-func (x *providerMgr) Invoke(f interface{}) error {
+// Invoke uber dig.Invoke
+func (x *providerMgr) Invoke(f any) error {
 	ret, err := x.Call(f)
 	if err != nil {
 		return err

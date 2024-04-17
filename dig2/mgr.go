@@ -6,6 +6,7 @@ import (
 )
 
 ////
+
 type providerMgr struct {
 	// implement providerListGetter
 	opt       *optionImpl
@@ -56,7 +57,8 @@ var DefaultProviderOption = &provideOptionImpl{
 }
 
 ////
-func (x *providerMgr) CallMust(f interface{}) []reflect.Value {
+
+func (x *providerMgr) CallMust(f any) []reflect.Value {
 	ret, err := x.Call(f)
 	if err != nil {
 		panic(err)
@@ -64,7 +66,7 @@ func (x *providerMgr) CallMust(f interface{}) []reflect.Value {
 	return ret
 }
 
-func (x *providerMgr) Call(f interface{}) ([]reflect.Value, error) {
+func (x *providerMgr) Call(f any) ([]reflect.Value, error) {
 	if x.opt.dry {
 		return make([]reflect.Value, reflect.TypeOf(f).NumOut()), nil
 	}
@@ -115,7 +117,6 @@ type ProviderBuildContext interface {
 	GetRootMgr() *providerMgr
 }
 
-//
 type TargetValueCreator = *TargetValueCreatorImpl
 type TargetValueCreatorImpl struct {
 	GetValue getValueFn
@@ -128,10 +129,11 @@ type GetterContext interface {
 }
 
 ////////////
+
 type notFoundProvider struct {
 	// implement iProvider
 }
 
-func (*notFoundProvider) FindValueCreator(bCtx ProviderBuildContext, t TargetKey) (TargetValueCreator, error) {
+func (*notFoundProvider) FindValueCreator(bCtx ProviderBuildContext, _ TargetKey) (TargetValueCreator, error) {
 	return nil, errors.Wrap(ErrNotFoundTargetProvider, bCtx.GetPathString())
 }

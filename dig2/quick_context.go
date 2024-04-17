@@ -127,7 +127,7 @@ func ApplyNotRepeatKey(k *tracePair) WithProviderSearchContextOptFunc {
 	}
 }
 
-func hasTreeValue(x *quickCloneTreeNode, val interface{}) bool {
+func hasTreeValue(x *quickCloneTreeNode, val any) bool {
 	last := x
 	for last != nil {
 		if last.Value() == val {

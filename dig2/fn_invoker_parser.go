@@ -27,7 +27,7 @@ func (x *InvokeBuilder) AddHoldTypeProvider(t TargetKey) error {
 	}
 	return x.scopeHoldTypeProvider.putType(toKey(t))
 }
-func (x *InvokeBuilder) AddPlaceholderFuncProvider(f interface{}) error {
+func (x *InvokeBuilder) AddPlaceholderFuncProvider(f any) error {
 	rf := unwrapDoubleValueOf(f)
 	tf := rf.Type()
 	inCount := tf.NumIn()
@@ -67,7 +67,7 @@ func (x *InvokeBuilder) getProviders() providerIterator {
 	return &providerStack{stack}
 }
 
-func (x *InvokeBuilder) BuildCtx(ctx ProviderBuildContext, f interface{}) (*InvokerCaller, error) {
+func (x *InvokeBuilder) BuildCtx(ctx ProviderBuildContext, f any) (*InvokerCaller, error) {
 	rf := unwrapDoubleValueOf(f)
 	if rf.Kind() != reflect.Func {
 		return nil, errors.Wrap(ErrMustFuncType, ctx.GetPathString())
@@ -100,11 +100,12 @@ func (x *InvokeBuilder) BuildCtx(ctx ProviderBuildContext, f interface{}) (*Invo
 	return caller, nil
 }
 
-func (x *InvokeBuilder) Build(f interface{}) (*InvokerCaller, error) {
+func (x *InvokeBuilder) Build(f any) (*InvokerCaller, error) {
 	return x.BuildCtx(x.newSearchCtx(), f)
 }
 
 /////
+
 type InvokerCaller struct {
 	rvFn     reflect.Value
 	in       []reflect.Value
@@ -140,7 +141,7 @@ func NewArgvHoldFromStrictArg(argv ...Arg) (*HoldValueStore, error) {
 	}
 	return valueHolder, nil
 }
-func NewArgvHoldFromCastArg(argv ...interface{}) (*HoldValueStore, error) {
+func NewArgvHoldFromCastArg(argv ...any) (*HoldValueStore, error) {
 	valueHolder := NewArgvHold()
 	for _, v := range argv {
 		rv := unwrapDoubleValueOf(v)
@@ -154,7 +155,7 @@ func NewArgvHoldFromCastArg(argv ...interface{}) (*HoldValueStore, error) {
 
 type Arg struct {
 	Type  reflect.Type
-	Value interface{}
+	Value any
 }
 
 // 注意argv...传入interface会自动转成struct，会导致与interface类型的声明不匹配，建议外部使用NewArgvHold().Append()
@@ -168,7 +169,7 @@ func (x *InvokerCaller) StrictCall(argv ...Arg) ([]reflect.Value, error) {
 }
 
 // not auto cast XXX struct to XX interface
-func (x *InvokerCaller) CastedCall(argv ...interface{}) ([]reflect.Value, error) {
+func (x *InvokerCaller) CastedCall(argv ...any) ([]reflect.Value, error) {
 	valueHolder, err := NewArgvHoldFromCastArg(argv...)
 	if err != nil {
 		return nil, err
@@ -186,7 +187,7 @@ func NewBuilderFromCtx(ctx ProviderBuildContext) *InvokeBuilder {
 	inv := newInvokeBuilder(root.getProviderStack(), root)
 	return inv
 }
-func NewInvokeFromCtx(ctx ProviderBuildContext, nowProvider iProvider, t TargetKey, fn interface{}) (*InvokerCaller, *InvokeBuilder, error) {
+func NewInvokeFromCtx(ctx ProviderBuildContext, nowProvider iProvider, t TargetKey, fn any) (*InvokerCaller, *InvokeBuilder, error) {
 	builder := NewBuilderFromCtx(ctx)
 	nextCtx, err := ctx.WithApply(ApplyFirstProvider(), ApplyNotRepeatKey(NewTracePair(nowProvider, t)), ApplyPathPush(t, ""))
 	if err != nil {
@@ -195,7 +196,7 @@ func NewInvokeFromCtx(ctx ProviderBuildContext, nowProvider iProvider, t TargetK
 	caller, err := builder.BuildCtx(nextCtx, fn)
 	return caller, builder, err
 }
-func NewCallerFromCtx(ctx ProviderBuildContext, nowProvider iProvider, t TargetKey, fn interface{}) (*InvokerCaller, error) {
+func NewCallerFromCtx(ctx ProviderBuildContext, nowProvider iProvider, t TargetKey, fn any) (*InvokerCaller, error) {
 	caller, _, err := NewInvokeFromCtx(ctx, nowProvider, t, fn)
 	return caller, err
 }

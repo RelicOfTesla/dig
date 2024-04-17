@@ -158,6 +158,10 @@ type Arg struct {
 	Value any
 }
 
+func ArgFrom[T any](v T) Arg {
+	return Arg{Type: TypeFor[T](), Value: v}
+}
+
 // 注意argv...传入interface会自动转成struct，会导致与interface类型的声明不匹配，建议外部使用NewArgvHold().Append()
 // fix interface auto cast to struct bug. now, use raw type
 func (x *InvokerCaller) StrictCall(argv ...Arg) ([]reflect.Value, error) {

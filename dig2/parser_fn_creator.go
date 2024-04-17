@@ -78,7 +78,7 @@ func newNativeResultPicker(idx int, lastIsErr bool) resultPickerFunc {
 	}
 }
 
-var vtNativeInterfaceType = reflect.TypeOf((*any)(nil)).Elem()
+var vtNativeInterfaceType = TypeFor[any]()
 
 func isIgnoreType(t reflect.Type) bool {
 	if t == vtReflectValue || t == vtNativeInterfaceType {

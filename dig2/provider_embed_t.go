@@ -19,8 +19,8 @@ func NewEmbedProvider(embedType reflect.Type, queryImpl bool, getValueFn any) *e
 	}
 }
 
-var vtTargetKey = reflect.TypeOf((*TargetKey)(nil)).Elem()
-var vtGetterContext = reflect.TypeOf((*GetterContext)(nil)).Elem()
+var vtTargetKey = TypeFor[TargetKey]()
+var vtGetterContext = TypeFor[GetterContext]()
 
 func (x *embedProvider) FindValueCreator(bCtx ProviderBuildContext, t TargetKey) (TargetValueCreator, error) {
 	tp := t.GetType()

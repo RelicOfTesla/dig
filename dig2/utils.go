@@ -7,8 +7,12 @@ import (
 
 var invalidReflectValue reflect.Value
 
-var vtReflectValue = reflect.TypeOf((*reflect.Value)(nil)).Elem()
-var vtErrorType = reflect.TypeOf((*error)(nil)).Elem()
+func TypeFor[T any]() reflect.Type {
+	return reflect.TypeOf((*T)(nil)).Elem()
+}
+
+var vtReflectValue = TypeFor[reflect.Value]()
+var vtErrorType = TypeFor[error]()
 
 func unwrapTypePtr(v reflect.Type) reflect.Type {
 	for {

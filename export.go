@@ -3,8 +3,8 @@ package dig
 import "github.com/RelicOfTesla/dig/dig2"
 
 type UBerProviderMgr interface {
-	Invoke(f interface{}) error
-	Provide(f interface{}, _opts ...dig2.ProvideOption) error
+	Invoke(f any) error
+	Provide(f any, _opts ...dig2.ProvideOption) error
 }
 
 func New(opts ...dig2.Option) UBerProviderMgr {
@@ -17,5 +17,4 @@ type Out = dig2.Out
 var Name = dig2.Name
 var Group = dig2.Group
 
-//
 var Cache = dig2.Cache

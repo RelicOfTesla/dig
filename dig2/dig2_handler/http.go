@@ -2,7 +2,6 @@ package dig2_handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/RelicOfTesla/dig/dig2"
 	"net/http"
 	"reflect"
@@ -35,36 +34,46 @@ func NewHttpHandler(di dig2.IProviderMgr, _opts ...HttpHandlerOpt) func(f any) h
 			defer func() {
 				if e := recover(); e != nil {
 					if err, ok := e.(error); ok && err != nil {
-						if opt.AfterResult != nil {
-							opt.AfterResult(resp, req, nil, err)
+						if opt.AfterRequest != nil {
+							opt.AfterRequest(resp, req, nil, err)
 						} else {
 							panic(e)
 						}
+					} else {
+						panic(e)
 					}
 				}
 			}()
 			ret, err := caller.StrictCall(
-				dig2.ArgFrom[http.ResponseWriter](resp),
-				dig2.ArgFrom[*http.Request](req),
+				//dig2.ArgFrom[http.ResponseWriter](resp),
+				//dig2.ArgFrom[*http.Request](req),
+				dig2.Arg{Type: vtHttpResponseWriter, Value: resp},
+				dig2.Arg{Type: vtHttpRequest, Value: req},
 			)
-			if opt.AfterResult != nil {
-				opt.AfterResult(resp, req, ret, err)
+			if opt.AfterRequest != nil {
+				opt.AfterRequest(resp, req, ret, err)
 			}
 		}
 	}
 }
 
+var vtHttpResponseWriter = dig2.TypeFor[http.ResponseWriter]()
+var vtHttpRequest = dig2.TypeFor[*http.Request]()
+
 type HttpHandlerOpt struct {
 	InitBind      func(builder *dig2.InvokeBuilder)
 	BeforeRequest func(resp http.ResponseWriter, req *http.Request) bool
-	AfterResult   func(resp http.ResponseWriter, req *http.Request, results []reflect.Value, err error)
+	AfterRequest  func(resp http.ResponseWriter, req *http.Request, results []reflect.Value, err error)
 }
 
-var DefaultHttpJsonOnErr = func(resp http.ResponseWriter, req *http.Request, err error) {
-	fmt.Fprint(resp, err.Error())
+var DefaultHttpJsonApiOnErr = func(resp http.ResponseWriter, req *http.Request, results []reflect.Value, err error) {
+	if err != nil {
+		resp.Write([]byte(err.Error()))
+		//fmt.Fprintf(resp, "%e", err)
+	}
 }
 
-func DefaultHttpJsonApiAfterResult(resp http.ResponseWriter, req *http.Request, results []reflect.Value, err error) {
+func DefaultHttpJsonApiAfterRequest(resp http.ResponseWriter, req *http.Request, results []reflect.Value, err error) {
 	if len(results) > 0 && err == nil {
 		last := results[len(results)-1]
 		if last.CanInterface() {
@@ -74,7 +83,7 @@ func DefaultHttpJsonApiAfterResult(resp http.ResponseWriter, req *http.Request, 
 		}
 	}
 	if err != nil {
-		DefaultHttpJsonOnErr(resp, req, err)
+		DefaultHttpJsonApiOnErr(resp, req, results, err)
 		return
 	}
 
@@ -87,16 +96,18 @@ func DefaultHttpJsonApiAfterResult(resp http.ResponseWriter, req *http.Request, 
 			if r0.CanInterface() {
 				p := r0.Interface()
 				switch v := p.(type) {
-				case fmt.Stringer:
-					fmt.Fprint(resp, v.String())
 				case interface {
 					Dispatch(resp http.ResponseWriter)
 				}:
 					v.Dispatch(resp)
+				case interface {
+					String() string
+				}:
+					resp.Write([]byte(v.String()))
 				default:
 					cb, err := json.Marshal(p)
 					if err != nil {
-						DefaultHttpJsonOnErr(resp, req, err)
+						DefaultHttpJsonApiOnErr(resp, req, results, err)
 					} else {
 						resp.Write(cb)
 					}

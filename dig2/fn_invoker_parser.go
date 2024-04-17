@@ -28,8 +28,16 @@ func (x *InvokeBuilder) AddHoldTypeProvider(t TargetKey) error {
 	return x.scopeHoldTypeProvider.putType(toKey(t))
 }
 func (x *InvokeBuilder) AddPlaceholderFuncProvider(f any) error {
-	rf := unwrapDoubleValueOf(f)
-	tf := rf.Type()
+	return x.AddPlaceholderFuncProviderEx(unwrapDoubleValueOf(f).Type())
+}
+func AddPlaceholderFuncProvider[F any](x *InvokeBuilder) error {
+	var f F
+	return x.AddPlaceholderFuncProvider(f)
+}
+func (x *InvokeBuilder) AddPlaceholderFuncProviderEx(tf reflect.Type) error {
+	if tf.Kind() != reflect.Func {
+		return errors.New("must func type")
+	}
 	inCount := tf.NumIn()
 	if tf.IsVariadic() && inCount > 0 {
 		inCount--

@@ -2,7 +2,6 @@ package dig2
 
 import (
 	"math/rand"
-	"reflect"
 	"strings"
 )
 
@@ -29,15 +28,8 @@ func New(opts ...Option) IProviderMgr {
 	return newProviderMgr(opt)
 }
 
-type IProviderMgr interface {
-	Invoke(f interface{}) error
-	Provide(f interface{}, _opts ...ProvideOption) error
+type IProviderMgr = *providerMgr
 
-	AppendProvider(prov IFindValueCreatorProvider)
-	CallMust(f interface{}) []reflect.Value
-	Call(f interface{}) ([]reflect.Value, error)
-	NewInvokeBuilder() *InvokeBuilder
-}
 type IFindValueCreatorProvider = iProvider
 
 func newOptions(opts ...Option) *optionImpl {

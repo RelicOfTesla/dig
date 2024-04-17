@@ -1,19 +1,17 @@
-* Fast dependency injection(DI) container in go (golang)
-* like [uber-go/dig](https://github.com/uber-go/dig) library, but better than it :) .
+package dig2_handler_test
 
+import (
+	"fmt"
+	"github.com/RelicOfTesla/dig/dig2"
+	"github.com/RelicOfTesla/dig/dig2/dig2_handler"
+	"github.com/stretchr/testify/require"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strconv"
+	"testing"
+)
 
-# This Future
-  * Split build and call, fast call speed in product.
-  * Support user custom provider.
-  * Support delay inject. (dynamic inject from call argument)
-  * Thread safely.
-
-## Example:
-  [http_test.go](dig2/dig2_handler/http_test.go) 
-  [container_test.go](dig2/container_test.go)
-  [request_di_test.go](dig2/request_di_test.go) 
-  
-```golang
 func TestHttpHandler(t *testing.T) {
 	di := dig2.New()
 	type test struct {
@@ -37,7 +35,6 @@ func TestHttpHandler(t *testing.T) {
 		// auto response from DefaultHttpJsonApiAfterResult
 		return test{A: a.A + 2}
 	}))
-	
 	srv := httptest.NewServer(nil)
 
 	s1 := httpTestGet(t, srv.URL+"/test1")
@@ -48,11 +45,11 @@ func TestHttpHandler(t *testing.T) {
 	require.Equal(t, s3, `{"A":3}`)
 }
 
-```
-
-# Some TODO
-  * some uber.dig test function not cover.
-  * ptr auto cast
-
----
-
+func httpTestGet(t *testing.T, u string) string {
+	resp, err := http.Get(u)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	require.NoError(t, err)
+	return string(data)
+}

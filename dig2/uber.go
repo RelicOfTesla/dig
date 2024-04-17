@@ -2,6 +2,7 @@ package dig2
 
 import (
 	"math/rand"
+	"reflect"
 	"strings"
 )
 
@@ -23,10 +24,21 @@ type optionImpl struct {
 	deferAcyclicVerification bool // provider loop check
 }
 
-func New(opts ...Option) *providerMgr {
+func New(opts ...Option) IProviderMgr {
 	opt := newOptions(opts...)
 	return newProviderMgr(opt)
 }
+
+type IProviderMgr interface {
+	Invoke(f interface{}) error
+	Provide(f interface{}, _opts ...ProvideOption) error
+
+	AppendProvider(prov IFindValueCreatorProvider)
+	CallMust(f interface{}) []reflect.Value
+	Call(f interface{}) ([]reflect.Value, error)
+	NewInvokeBuilder() *InvokeBuilder
+}
+type IFindValueCreatorProvider = iProvider
 
 func newOptions(opts ...Option) *optionImpl {
 	ret := &optionImpl{}
